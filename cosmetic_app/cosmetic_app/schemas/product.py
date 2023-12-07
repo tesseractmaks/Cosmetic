@@ -17,3 +17,17 @@ class ProductSchema(BaseModel):
     created_at: datetime
     updated_at: datetime | None = None
 
+class ProductResponseSchema(ProductSchema):
+    ...
+
+
+class ProductCreateSchema(ProductSchema):
+    ...
+
+
+class ProductUpdateSchema(ProductSchema):
+    ...
+
+
+class ProductUpdatePartialSchema(ProductSchema):
+    ...

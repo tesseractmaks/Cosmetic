@@ -11,4 +11,4 @@ class Base(DeclarativeBase):
         return f"{cls.__name__.lower()}s"
 
     # id: Mapped[int] = mapped_column(primary_key=True)
-    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    id: Mapped[uuid.uuid4] = mapped_column(primary_key=True, default=uuid.uuid4)

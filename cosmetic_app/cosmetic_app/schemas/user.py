@@ -13,3 +13,19 @@ class UserSchema(BaseModel):
     profile: ProfileSchema = None
     created_at: datetime
     updated_at: datetime | None = None
+
+
+class UserResponseSchema(UserSchema):
+    ...
+
+
+class UserCreateSchema(UserSchema):
+    ...
+
+
+class UserUpdateSchema(UserSchema):
+    ...
+
+
+class UserUpdatePartialSchema(UserSchema):
+    ...

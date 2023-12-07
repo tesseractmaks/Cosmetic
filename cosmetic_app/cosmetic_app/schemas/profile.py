@@ -16,3 +16,18 @@ class ProfileSchema(BaseModel):
     created_at: datetime
     updated_at: datetime | None = None
 
+
+class ProfileResponseSchema(ProfileSchema):
+    ...
+
+
+class ProfileCreateSchema(ProfileSchema):
+    ...
+
+
+class ProfileUpdateSchema(ProfileSchema):
+    ...
+
+
+class ProfileUpdatePartialSchema(ProfileSchema):
+    ...
