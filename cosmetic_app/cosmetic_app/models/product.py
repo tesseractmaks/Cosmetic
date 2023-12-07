@@ -3,8 +3,12 @@ from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy import String
 from sqlalchemy import ForeignKey, func, text
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 from cosmetic_app.db import Base
+
+if TYPE_CHECKING:
+    from cosmetic_app.models import Brand, Category
 
 
 class Product(Base):
@@ -18,6 +22,11 @@ class Product(Base):
     brand_id: Mapped[int] = mapped_column(ForeignKey("brand.id", ondelete="CASCADE"))
     category_id: Mapped[int] = mapped_column(ForeignKey("category.id", ondelete="CASCADE"))
 
-    brand = relationship("Brand", back_populates="products")
-    categories = relationship("Category", back_populates="products")
+    brand: Mapped["Brand"] = relationship("Brand", back_populates="products")
+    categories: Mapped["Category"] = relationship("Category", back_populates="products")
 
+    def __str__(self):
+        return f"{self.__class__.__name__}, title={self.title}, price={self.price}, article_number={self.article_number}"
+
+    def __repr__(self):
+        return str(self)
