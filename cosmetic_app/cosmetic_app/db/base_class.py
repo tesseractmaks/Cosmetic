@@ -1,5 +1,5 @@
 import uuid
-
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, declared_attr
 
 
@@ -11,4 +11,4 @@ class Base(DeclarativeBase):
         return f"{cls.__name__.lower()}s"
 
     # id: Mapped[int] = mapped_column(primary_key=True)
-    id: Mapped[uuid.uuid4] = mapped_column(primary_key=True, default=uuid.uuid4)
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)

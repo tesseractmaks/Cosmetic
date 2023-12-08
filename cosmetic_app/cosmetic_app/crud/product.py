@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.engine import Result
 from sqlalchemy import select, update, delete
 
-from cosmetic_app.models import Product
+from cosmetic_app.models.product import Product
 from cosmetic_app.schemas import (
     ProductSchema,
     ProductUpdateSchema,

@@ -3,10 +3,10 @@ from hypercorn.asyncio import serve
 from hypercorn.config import Config
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
+# from fastapi.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
 
-from .api import router as router_v1
+from cosmetic_app.api import router as router_v1
 # from api import router_token
 from cosmetic_app.core import settings
 from cosmetic_app.db import connect_create_if_exist, init_db

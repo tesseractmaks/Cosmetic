@@ -26,7 +26,7 @@ __all__ = (
     "UserResponseSchema",
 )
 
-from .brand import (
+from cosmetic_app.schemas.brand import (
     BrandSchema,
     BrandUpdateSchema,
     BrandCreateSchema,

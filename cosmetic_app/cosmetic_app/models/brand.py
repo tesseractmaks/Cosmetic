@@ -1,11 +1,11 @@
 from sqlalchemy.orm import Mapped, relationship
 
-from cosmetic_app.db import Base
+from cosmetic_app.db.base_class import Base
 
 
 class Brand(Base):
     title: Mapped[str]
-    products = relationship("Brand", back_populates="brands")
+    products = relationship("Product", back_populates="brand")
 
     def __str__(self):
         return f"{self.__class__.__name__}, title={self.title}"

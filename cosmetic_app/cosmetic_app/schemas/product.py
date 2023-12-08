@@ -2,23 +2,29 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict
 from fastapi import UploadFile, File
 
-from .brand import BrandSchema
-from .category import CategorySchema
+
+
+
+from cosmetic_app.schemas.category import CategorySchema
+from cosmetic_app.schemas.brand import BrandSchema
 
 
 class ProductSchema(BaseModel):
-    model_config = ConfigDict(from_attributes=True, extra="allow")
+    # id: int
+    model_config = ConfigDict(from_attributes=True)
     title: str
     article_number: str
     price: int
-    image: UploadFile = File(...)
-    brand: BrandSchema
-    category: CategorySchema
+    # image: UploadFile = File(...)
+    image: str
+    # brand: "BrandSchema"
     created_at: datetime
     updated_at: datetime | None = None
 
+
 class ProductResponseSchema(ProductSchema):
-    ...
+    categories: CategorySchema
+    brand: BrandSchema
 
 
 class ProductCreateSchema(ProductSchema):

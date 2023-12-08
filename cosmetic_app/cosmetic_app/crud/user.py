@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.engine import Result
 from sqlalchemy import select, update, delete
 
-from cosmetic_app.models import User
+from cosmetic_app.models.user import UserModel
 from cosmetic_app.schemas import (
     UserSchema,
     UserUpdateSchema,
@@ -14,22 +14,22 @@ from cosmetic_app.schemas import (
 
 
 async def read_user_db(session: AsyncSession) -> list[UserSchema]:
-    query = select(User).order_by(User.id)
+    query = select(UserModel).order_by(UserModel.id)
     result: Result = await session.execute(query)
     users = result.scalars().all()
     return list(users)
 
 
 async def read_user_by_id_db(session: AsyncSession, user_id: uuid.uuid4) -> UserSchema | None:
-    return await session.get(User, user_id)
+    return await session.get(UserModel, user_id)
 
 
 async def create_user_db(
         session: AsyncSession,
         user_in: UserCreateSchema,
-) -> User:
+) -> UserModel:
     user_obj = user_in.model_dump()
-    user = User(**user_obj)
+    user = UserModel(**user_obj)
     session.add(user)
     await session.commit()
     return user

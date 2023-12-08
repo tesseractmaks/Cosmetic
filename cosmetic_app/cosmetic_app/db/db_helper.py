@@ -17,15 +17,15 @@ class DatabaseHelper:
             expire_on_commit=False,
         )
 
-    def get_scopped_session(self):
+    def get_scoped_session(self):
         session = async_scoped_session(
             session_factory=self.session_factory,
             scopefunc=current_task,
         )
         return session
 
-    async def scopped_session_dependency(self) -> AsyncSession:
-        session = self.get_scopped_session()
+    async def scoped_session_dependency(self) -> AsyncSession:
+        session = self.get_scoped_session()
         yield session
         await session.remove()
 
