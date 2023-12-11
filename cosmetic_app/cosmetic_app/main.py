@@ -1,6 +1,12 @@
+from redis import asyncio as aioredis
 import asyncio
 from hypercorn.asyncio import serve
 from hypercorn.config import Config
+
+
+from fastapi_cache import FastAPICache
+from fastapi_cache.backends.redis import RedisBackend
+
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 # from fastapi.staticfiles import StaticFiles
@@ -14,12 +20,16 @@ from cosmetic_app.db import connect_create_if_exist, init_db
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    redis = await aioredis.from_url("redis://127.0.0.1:6379", encoding="utf-8")
+    FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")
     await connect_create_if_exist(settings.db_username, settings.db_password, settings.db_name)
     await init_db()
     yield
 
 
 app = FastAPI(lifespan=lifespan)
+
+
 # app.mount("/img", StaticFiles(directory="frontend", html=True), name="img")
 app.include_router(
     router=router_v1,
@@ -50,3 +60,10 @@ sockets = config.create_sockets()
 sock = sockets.insecure_sockets[0]
 
 asyncio.run(serve(app, config))
+
+
+
+
+
+
+

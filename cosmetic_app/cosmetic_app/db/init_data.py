@@ -80,7 +80,7 @@ async def add_test_product():
         brand_obj = await conn.execute(query)
         brands = brand_obj.scalars().all()
 
-        for _ in range(20):
+        for _ in range(3):
             values_data = {
                 "title": random.choice(["Eyeliner", "Lipstick", "Blush", "Mascara", "Eyeshadow"]),
                 "article_number": f"#{random.randint(200, 300)}",

@@ -51,7 +51,7 @@ status_code=status.HTTP_201_CREATED
 )
 async def create_product(
         product_in: ProductCreateSchema,
-        session: AsyncSession= Depends(db_helper.scoped_session_dependency)
+        session: AsyncSession = Depends(db_helper.scoped_session_dependency)
 ):
     # pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
     # product_in.password = pwd_context.hash(product_in.password)
