@@ -1,8 +1,7 @@
 import uuid
-
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.engine import Result
-from sqlalchemy import select, update, delete
+from sqlalchemy.ext.asyncio import AsyncSession, AsyncResult
+from sqlalchemy.orm import selectinload
+from sqlalchemy import select
 
 from cosmetic_app.models.category import Category
 from cosmetic_app.schemas import (
@@ -14,10 +13,22 @@ from cosmetic_app.schemas import (
 
 
 async def read_category_db(session: AsyncSession) -> list[CategorySchema]:
-    query = select(Category).order_by(Category.id)
-    result: Result = await session.execute(query)
-    categorys = result.scalars().all()
-    return list(categorys)
+    query = select(Category).order_by(Category.id).options(
+        selectinload(Category.products_assoc))
+    result: AsyncResult = await session.execute(query)
+    categories = result.unique().scalars().all()
+    return list(categories)
+
+
+async def read_category_by_title_db(
+        session: AsyncSession,
+        category_title: str
+) -> CategorySchema | None:
+    query = select(Category).where(Category.title == category_title).options(
+        selectinload(Category.products_assoc))
+    result: AsyncResult = await session.execute(query)
+    category = result.unique().scalar()
+    return category
 
 
 async def read_category_by_id_db(session: AsyncSession, category_id: uuid.uuid4) -> CategorySchema | None:

@@ -51,7 +51,6 @@ async def get_consumer():
         record = pickle.loads(records.value)
         if consumer is not None:
             consumer.close()
-
         return record
 
 
@@ -143,13 +142,13 @@ def parse_response(response_raw):
 async def read_users(
         session: AsyncSession = Depends(db_helper.scoped_session_dependency),
 ):
-    # response = await read_user_db(session=session)
+    response = await read_user_db(session=session)
 
     # kafka
     # send_producer(value, topic_name='users')
     # await send_producer(response, topic_name='users')
-    res = await get_consumer()
-    return res
+    # res = await get_consumer()
+    # return res
 
     # redis
     # value = parse_response(response)
@@ -157,7 +156,7 @@ async def read_users(
     # res = redis_cache()
     # return json.loads(*res)
 
-    # return response
+    return response
 
 
 @router.get(
@@ -178,7 +177,7 @@ status_code=status.HTTP_201_CREATED
 )
 async def create_user(
         user_in: UserCreateSchema,
-        session: AsyncSession= Depends(db_helper.scoped_session_dependency)
+        session: AsyncSession = Depends(db_helper.scoped_session_dependency)
 ):
     # pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
     # user_in.password = pwd_context.hash(user_in.password)

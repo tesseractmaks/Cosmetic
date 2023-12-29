@@ -1,9 +1,9 @@
 __all__ = (
-    "BrandSchema",
-    "BrandUpdateSchema",
-    "BrandCreateSchema",
-    "BrandUpdatePartialSchema",
-    "BrandResponseSchema",
+    "TagSchema",
+    "TagUpdateSchema",
+    "TagCreateSchema",
+    "TagUpdatePartialSchema",
+    "TagResponseSchema",
     "CategorySchema",
     "CategoryUpdateSchema",
     "CategoryCreateSchema",
@@ -24,14 +24,19 @@ __all__ = (
     "UserCreateSchema",
     "UserUpdatePartialSchema",
     "UserResponseSchema",
+    "OrderSchema",
+    "OrderUpdateSchema",
+    "OrderCreateSchema",
+    "OrderResponseSchema",
+    "OrderUpdatePartialSchema",
 )
 
-from cosmetic_app.schemas.brand import (
-    BrandSchema,
-    BrandUpdateSchema,
-    BrandCreateSchema,
-    BrandUpdatePartialSchema,
-    BrandResponseSchema,
+from cosmetic_app.schemas.tags import (
+    TagSchema,
+    TagUpdateSchema,
+    TagCreateSchema,
+    TagUpdatePartialSchema,
+    TagResponseSchema,
 )
 from .category import (
     CategorySchema,
@@ -62,4 +67,12 @@ from .user import (
     UserCreateSchema,
     UserUpdatePartialSchema,
     UserResponseSchema
+)
+
+from .order import (
+    OrderSchema,
+    OrderUpdateSchema,
+    OrderCreateSchema,
+    OrderResponseSchema,
+    OrderUpdatePartialSchema
 )

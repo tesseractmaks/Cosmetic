@@ -8,7 +8,6 @@ from cosmetic_app.db import Base
 class UserModel(Base):
     email: Mapped[str]
     password: Mapped[str] = mapped_column(unique=True)
-    password: Mapped[str]
     is_active: Mapped[bool]
 
     profile = relationship("Profile", uselist=False, back_populates="user", lazy='joined')

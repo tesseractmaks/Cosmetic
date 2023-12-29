@@ -23,8 +23,6 @@ class UserResponseSchema(UserSchema):
     profile: ProfileSchema
 
 
-
-
 class UserCreateSchema(UserSchema):
     ...
 

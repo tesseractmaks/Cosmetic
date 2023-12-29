@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from cosmetic_app.crud import (
     read_user_by_id_db,
     read_profile_by_id_db,
-    read_brand_by_id_db,
+    read_tag_by_id_db,
     read_category_by_id_db,
     read_product_by_id_db
 )
@@ -15,7 +15,7 @@ from cosmetic_app.schemas import (
     UserSchema,
     ProductSchema,
     ProfileSchema,
-    BrandSchema,
+    TagSchema,
     CategorySchema
 )
 
@@ -68,13 +68,13 @@ async def category_by_id(
     )
 
 
-async def brand_by_id(
-        brand_id: Annotated[uuid.uuid4, Path],
+async def tag_by_id(
+        tag_id: Annotated[uuid.uuid4, Path],
         session: AsyncSession = Depends(db_helper.scoped_session_dependency)
-) -> BrandSchema:
-    brand = await read_brand_by_id_db(session=session, brand_id=brand_id)
-    if brand is not None:
-        return brand
+) -> TagSchema:
+    tag = await read_tag_by_id_db(session=session, tag_id=tag_id)
+    if tag is not None:
+        return tag
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND, detail="not found..."
     )

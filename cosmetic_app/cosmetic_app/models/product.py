@@ -1,34 +1,32 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy.dialects.postgresql import ARRAY
-from sqlalchemy import String
-from sqlalchemy import ForeignKey, func, text
+from sqlalchemy import text
 from datetime import datetime
 from typing import TYPE_CHECKING
-import uuid
+
 from cosmetic_app.db import Base
 
+
 if TYPE_CHECKING:
-    from cosmetic_app.models.category import Category
-    from cosmetic_app.models.brand import Brand
+    from cosmetic_app.models import Tag, Category, Order
 
 
 class Product(Base):
     title: Mapped[str]
-    # article_number: Mapped[str] = mapped_column(unique=True)
-    article_number: Mapped[str]
+    link_detail: Mapped[str]
     price: Mapped[int]
     image: Mapped[str]
+    label: Mapped[str] = mapped_column(nullable=True)
+    num_goods: Mapped[str]
+    data_goods: Mapped[str]
     created_at: Mapped[datetime] = mapped_column(server_default=text("TIMEZONE('utc', now())"))
     updated_at: Mapped[datetime] = mapped_column(server_default=text("TIMEZONE('utc', now())"), onupdate=datetime.utcnow)
 
-    brand_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("brands.id", ondelete="CASCADE"))
-    category_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("categories.id", ondelete="CASCADE"))
-
-    brand = relationship("Brand", back_populates="products", lazy='joined')
-    categories = relationship("Category", back_populates="products", lazy='joined')
+    tags_assoc: Mapped[list["Tag"]] = relationship(secondary="associate_tags", back_populates="products_assoc")
+    category_assoc: Mapped[list["Category"]] = relationship(secondary="associate_categories", back_populates="products_assoc")
+    order_assoc: Mapped[list["Order"]] = relationship(secondary="associate_order_product", back_populates="products_assoc")
 
     def __str__(self):
-        return f"{self.__class__.__name__}, title={self.title}, price={self.price}, article_number={self.article_number}"
+        return f"{self.__class__.__name__}, title={self.title}, price={self.price}"
 
     def __repr__(self):
         return str(self)
