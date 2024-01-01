@@ -2,7 +2,6 @@ import { anyElement, imgElement, aElements } from "../components/elements.js"
 import  { collectionCategory, collectionTag} from "./collections-data.js"
 import  { ordersNode } from "./order-list.js"
 import  { orderTrack } from "./order-track.js"
-import  { orderConfirm } from "./order-confirm.js"
 
 
 async function cardProduct(productData, catLable) {
@@ -113,6 +112,8 @@ export async function listProducts(category, tag){
 }
 
 async function catalogProducts(dataProducts = [],  catLable = null, nodeAny = null) {
+
+    
     let elemDom = document.querySelector("#dle-content")
     elemDom.innerHTML = ""
 
@@ -203,13 +204,25 @@ async function catalogProducts(dataProducts = [],  catLable = null, nodeAny = nu
 
         // const dataProducts = await listProducts(element.text, "")
         const orderNode = await ordersNode()
-    
-
         catalogProducts([], null, orderNode)
-    }
-            })
 
-        }
+         //create_producers_order
+         let topics = ["conf-1", "conf-2", "conf-3", "conf-4"]
+         await fetch(`http://127.0.0.1:8000/api/v1/orders/?topics=${topics}`);
+            }
+        })
+
+    }
+//      // Admin panel
+//      let orderConfirmElem = document.querySelector("#order-a")    
+    
+//      orderConfirmElem.addEventListener("click", async function(event) {
+//      event.preventDefault()
+ 
+//      const orderT = await orderConfirm()
+//      catalogProducts([], null, orderT)
+//  })
+
         
 
     let orderDetailElem = document.querySelector(".order-body")
@@ -218,27 +231,70 @@ async function catalogProducts(dataProducts = [],  catLable = null, nodeAny = nu
         
             orderDetailElem.addEventListener("click", async function(event) {
             event.preventDefault()
-        
 
+            try {
+                if (["conf-1", "conf-2", "conf-3", "conf-4"].includes(event.target.children[1].id)) {
+                    return
+                }
+             }
+            catch (err){}
+    
         if (!event.target.dataset.detail) {
             return
         } 
-        else {
-
-            const orderT = await orderTrack(4)
-            /* Confirm */
-            // const orderT = await orderConfirm()
-    
-            
-            catalogProducts([], null, orderT)
-        }
-                })
-        
-
- 
-    }
          
-        }
+        else {
+            let orderT = await orderTrack(0)
+            catalogProducts([], null, orderT)
+            }
+        })
+    
+
+        let  ws = new WebSocket("ws://127.0.0.1:8000/api/v1/orders/ws/1")
+        ws.onmessage = async function(evt) {
+            evt.preventDefault()
+            
+            let recived_msg = await evt.data
+           
+            let idx = recived_msg.slice(-1)
+            console.log(idx,"=+=")
+            let orderT = await orderTrack(idx)
+            catalogProducts([], null, orderT)
+            }
+        
+    }
+ 
+
+    
+
+// try {
+//     // const evtSource = new EventSource("http://127.0.0.1:8000/api/v1/orders/topic/conf-1");
+//     const evtSource = new EventSource("http://127.0.0.1:5050");
+//     if (evtSource){
+   
+//         // evtSource.addEventListener("open", function(e) {
+//             evtSource.addEventListener("message", function(e) {
+//             e.preventDefault()
+
+//         console.log("eventData-----------", e.data)
+//     })
+// }
+// }
+// catch(err){}
+
+}
+
+
+
+    // try{
+    //     let response = await fetch(`http://127.0.0.1:8000/api/v1/orders/${topic}/`);
+    //     const eventData = await response.json();
+    //     console.log(eventData)
+    // }
+    // catch(err){}
+
+    // }
+
 
 
     // let orderTrackElem = orderT.querySelectorAll("#tr ul li")

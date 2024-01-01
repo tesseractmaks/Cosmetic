@@ -38,7 +38,30 @@
   <link rel="stylesheet" href="../templates/Cosmo/css/style.css" />
  <link href="../templates/Cosmo/css/ks_contact_form.css" type="text/css" rel="stylesheet">
    <script type="text/javascript" src="../templates/Cosmo/js/ks_contact_form.js"></script>
-</head>
+
+  <!-- <script>
+
+function wSocket() {
+    if("WebSocket" in window){
+        let ws = new WebSocket("ws:/127.0.0.1:8000/api/v1/orders/ws?topic=conf-1")
+
+        ws.onopen = function() {
+            console.log("open - Websockett!!!!!!!!11")
+        }
+
+        ws.onmessage = function(evt) {
+            let recived_msg = evt.data
+            console.log(recived_msg, "--- Websockett!!!!!!!!")
+        }
+
+        ws.onclose = function() {
+            console.log("Close  -  Websockett!!!!!!!!11")
+        }
+    }
+}
+
+  </script> -->
+  </head>
 <body class="relative">
 	
 				
@@ -261,6 +284,7 @@
     	
                 </ul>
                 <div id="order-l" class="top-order-link"><a href="#" data-order="order">мои заказы</a></div>
+                <div id="order-a" class="top-order-link"><a href="./admin-panel.htm" data-order="order">admin-panel</a></div>
               </div>
           
             </div> <!-- end row -->
@@ -314,9 +338,8 @@
 			
               <div class="shop-catalogue grid-view">
 
-             <div id='dle-content'>
+             <div id='dle-content'></div>
 
-</div>
 
                 </div> <!-- end row -->
       

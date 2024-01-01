@@ -2249,7 +2249,7 @@ box-shadow: 9px 13px 26px -8px #222533;
 .hero-holder {
   display: block;
   position: absolute;
-  width: 100%;
+  width: 900px;
   height: 100%;
   top:45%;
 }
@@ -2283,7 +2283,7 @@ box-shadow: 9px 13px 26px -8px #222533;
 
 .hero-message h1 {
   color: #fff;
-  font-size: 80px;
+  font-size: 70px;
   font-weight: 500;
   line-height: 1;
 }
@@ -5145,6 +5145,17 @@ h2.heading-frame {
   margin-top: 0px;
 }
 
+.done-text {
+    min-height: 54px;
+    padding-top: 12px;
+    align-items: center;
+    text-align: center;
+    margin-left: 30px;
+    font-size: 20px;
+}
+
+
+
 /* My-edits */
 
 .site-color {
@@ -5166,6 +5177,11 @@ h2.heading-frame {
   min-height: 30px;
   background-color: #c1b6a7;
   text-align: center;
+}
+
+.admin-p {
+  display: flex;
+  justify-content: center;
 }
 
 
@@ -5570,6 +5586,7 @@ input[type=number] {
   display: flex;
   justify-content: center;
   width: 100%;
+  margin-top: 60px;
   
 }
 
@@ -5640,7 +5657,6 @@ input[type=number] {
 	background: #cd1594;
 	color: #fff;
 	min-width: 200px;
-	margin: 30px;
 	cursor: pointer;
 }
 
@@ -5666,7 +5682,7 @@ input[type=number] {
 	font-weight: 600;
 	text-align: center;
 	padding: 5px 20px;
-	background: #109409;
+	background: rgb(16, 148, 9);
 	color: #fff;
 	min-width: 50px;
 	margin: 10px;
@@ -5677,6 +5693,16 @@ input[type=number] {
 .confirm-btn:hover {
   box-shadow: 0 0 10px 3px #1ca015
 }
+
+.confirm-btn-disable {
+  background: rgba(16, 148, 9, 0.3);
+  border: none
+}
+
+.confirm-btn-disable:hover {
+  box-shadow:none;
+}
+
 
 .div-descr-cnf {
   display: flex;
@@ -5836,6 +5862,14 @@ input[type=number] {
 
 .cart_totals {
   padding-left: 30px;
+}
+
+.done-block {
+  display: flex;
+  justify-content: center;
+  background-color: #526cc2;
+  color: #fff;
+  font-weight: 600;
 }
 
 @media only screen and (max-width: 991px) {

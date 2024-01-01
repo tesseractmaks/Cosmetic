@@ -12,9 +12,9 @@ from confluent_kafka import Consumer as ConfluentConsumer
 #         })
 
 
-def get_consumer():
+def get_consumer(topic):
     consumer = KafkaConsumer(
-        "users",
+        f"{topic}",
         auto_offset_reset="earliest",
         bootstrap_servers=["127.0.0.1:9092"],
         api_version=(0, 10),
@@ -24,32 +24,16 @@ def get_consumer():
     )
 
     for records in consumer:
+
         record = json.loads(records.value)
+        # print(record, "+++")
+
         if consumer is not None:
             consumer.close()
         return record
 
 
-def get_consumer1():
-    consumer = KafkaConsumer(
-        "users",
-        auto_offset_reset="earliest",
-        bootstrap_servers=["127.0.0.1:9092"],
-        api_version=(0, 10),
-        max_poll_records=1000,
-        # consumer_timeout_ms=100,
-        group_id="live-query-daac779b-a20d-41b2-868b-e90227949bf3"
-    )
-
-    for records in consumer:
-        record = records.value
-        # record = pickle.loads(records.value)
-        if consumer is not None:
-            consumer.close()
-        return record
-
-
-def send_producer(value, topic_name='users'):
+def create_producer(values):
     kafka_producer = KafkaProducer(
         bootstrap_servers=["127.0.0.1:9092"],
         api_version=(0, 10),
@@ -62,11 +46,11 @@ def send_producer(value, topic_name='users'):
 
         # key_bytes = pickle.dumps(key)
         # value_bytes = pickle.dumps(value)
-        kafka_producer.send(topic_name, value=value)
+        kafka_producer.send(values["topic"], value=values)
 
         kafka_producer.flush()
 
-        print("Send Success!")
+        # print("Send Success! - ", values["topic"])
     except Exception as exc:
         print("--")
         print(str(exc))
@@ -87,11 +71,11 @@ def send_producer(value, topic_name='users'):
 #     for record in records:
 #         print(record["users"])
 
-send_producer("hello", topic_name='users')
-res = get_consumer()
+# create_producer("hello", topic_name='users')
+# res = get_consumer()
 # res2 = get_consumer1()
 
-print(res)
+# print(res)
 # print(res2)
 
 

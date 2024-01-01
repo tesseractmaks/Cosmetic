@@ -1,8 +1,10 @@
 import { anyElement, buttonElement, aElements, imgElement } from "../components/elements.js"
 
-
+// let  ws = new WebSocket("ws://127.0.0.1:8000/api/v1/orders/ws/1")
 export async function orderTrack(idx = 1) {
-
+    let  ws = new WebSocket("ws://127.0.0.1:8000/api/v1/orders/ws/1")
+    
+   
     let dateNow = new Date()
     let testOrder = [
         {
@@ -35,19 +37,73 @@ export async function orderTrack(idx = 1) {
         buttonTr.classList.remove("btn-tr-disabled");
     }
 
-    testOrder.slice(0, idx).forEach(async function(elem){
-        let li = await ulAelementTrack(elem)
-        ulElem.prepend(li)
-    })
+    if (idx > 0){
+        testOrder.slice(-idx).forEach(async function(elem){
+            let li = await ulAelementTrack(elem)
+            ulElem.prepend(li)
+        })
+    }
 
     let btnDiv = anyElement("div", ["btn-div"])
+
+
+
+    btnDiv.append(buttonTr)
+    ulElem.append(btnDiv)
+    
+
+    // await wSocket(ws)
+
+
 
     btnDiv.append(buttonTr)
     ulElem.append(btnDiv)
     mainDiv.append(ulElem)
 
+    buttonTr.addEventListener("click", async function(e) {
+        await wSocket(ws)
+        e.preventDefault()
+       
+    })
+    ws.onmessage = async function(evt) {
+        let recived_msg = await evt.data
+        console.log(recived_msg,"==")
+        }
     return mainDiv
 };
+
+
+
+
+
+async function wSocket(ws) {
+   
+
+    // let api = (function(msg) {
+    //     console.log(msg);
+    //     mainDiv.append(ulElem)
+    //     return mainDiv
+    //   });
+
+    // if("WebSocket" in window){
+        
+
+        // ws.onopen = function() {
+        //     console.log("open - Track Websockett!!!!!!!!11")
+        // }
+
+       
+        ws.send(5)
+        // api(recived_msg);
+        
+
+        ws.onclose = async function() {
+            console.log("Close  -Track   Websockett!!!!!!!!11")
+        }
+    // }
+    // return 
+    // return api()
+}
 
 
 async function ulAelementTrack(element) {
@@ -70,6 +126,7 @@ async function ulAelementTrack(element) {
     
     return li
 };
+
 
 // buttonSave.removeAttribute("disabled")
 // buttonSave.classList.remove("btn-tr-disabled");

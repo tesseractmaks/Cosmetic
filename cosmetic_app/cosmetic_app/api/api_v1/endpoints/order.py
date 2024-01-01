@@ -1,7 +1,14 @@
-from fastapi import APIRouter, status, Depends
+import json
+from typing import Any
+
+import jsonpickle
+from fastapi import APIRouter, status, Depends, Request, Response
+from fastapi.websockets import WebSocket, WebSocketDisconnect
 from sqlalchemy.ext.asyncio import AsyncSession
 # from passlib.context import CryptContext
-
+import socket
+import aiohttp
+from cosmetic_app.api.api_v1.endpoints import get_consumer, create_producer
 from cosmetic_app.crud import (
     read_order_db,
     # update_order_db,
@@ -32,15 +39,132 @@ from .depends_endps import product_by_id
 router = APIRouter(tags=["Order"])
 
 
+async def get_links(client: aiohttp.ClientSession, link):
+    try:
+        async with client.get(url=link) as response:
+            return {"data": "12332312"}
+    except Exception:
+        pass
+
+
 @router.get(
     "/",
     # response_model=list[ProductResponseSchema]
 )
-async def read_orders(
+async def create_producers_order(
+        topics: str,
+        request: Request,
         session: AsyncSession = Depends(db_helper.scoped_session_dependency),
 ):
-    return await read_order_db(session=session)
 
+    for topic in topics.split(","):
+        value = {
+            'topic': str(topic),
+            'host': str(request.client.host),
+        }
+        create_producer(value)
+
+
+class ConnectionManager:
+    def __init__(self):
+        self.active_connection: list[WebSocket] = []
+
+    async def connect(self, websocket: WebSocket):
+        await websocket.accept()
+        self.active_connection.append(websocket)
+
+    async def disconnect(self, websocket: WebSocket):
+        self.active_connection.remove(websocket)
+
+    async def send_personal_message(self, message: str, websocket: WebSocket):
+        await websocket.send_text(message)
+
+    async def broadcast(self, message: str):
+        for connection in self.active_connection:
+            await connection.send_text(message)
+
+
+manager = ConnectionManager()
+
+
+@router.websocket("/ws/{client_id}")
+async def websocket_endpoint(
+        websocket: WebSocket,
+        client_id: str,
+        # topic: str = None,
+):
+    # kafka
+    # record = get_consumer(topic)
+
+    # sockets
+    await manager.connect(websocket)
+    try:
+        while True:
+            data = await websocket.receive_text()
+            # print(websocket)
+            # await manager.send_personal_message(f"some text{data}", websocket)
+            await manager.broadcast(f"Topic #{client_id} -- {data}")
+    except WebSocketDisconnect:
+        await manager.disconnect(websocket)
+        await manager.broadcast(f"Client #{client_id} left the chat")
+
+
+@router.get(
+    "/topic/{topic}/",
+    # response_model=list[ProductResponseSchema]
+)
+async def get_consumer_order(
+        response: Response,
+
+        topic: str = None,
+        session: AsyncSession = Depends(db_helper.scoped_session_dependency),
+):
+    record = get_consumer(topic)
+
+
+@router.get(
+    "/topic/event",
+    # response_model=list[ProductResponseSchema]
+)
+async def get_consumer_order(
+        response: Response,
+        topic: str = None,
+        session: AsyncSession = Depends(db_helper.scoped_session_dependency),
+):
+    print("response")
+
+    response.headers["Content-Type"] = "text/event-stream"
+    return {"data": "response"}
+
+
+    # order_article = await read_order_db(session=session)
+    # print(topics.split(","))
+
+    # topics_obj = topics.model_dump()
+    # print(topics_obj)
+    # for topic in topics.split(","):
+    #     create_producer(value=f"value-{topic}", topic_name=str(topic))
+    # return order_article
+
+
+# @router.get(
+#     "/",
+#     # response_model=list[ProductResponseSchema]
+# )
+# async def read_orders(
+#         # topics: File(...),
+#         topics: str,
+#         session: AsyncSession = Depends(db_helper.scoped_session_dependency),
+# ):
+#
+#     order_article = await read_order_db(session=session)
+#     print(topics.split(","))
+#     print(type(topics))
+#     # topics_obj = topics.model_dump()
+#     # print(topics_obj)
+#     for topic in topics.split(","):
+#         create_producer(value=f"value-{topic}", topic_name=str(topic))
+#     return order_article
 
 # @router.get(
 #     "/{order_id}/",

@@ -179,6 +179,7 @@ async def create_user(
         user_in: UserCreateSchema,
         session: AsyncSession = Depends(db_helper.scoped_session_dependency)
 ):
+    print(user_in)
     # pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
     # user_in.password = pwd_context.hash(user_in.password)
     return await create_user_db(session=session, user_in=user_in)
@@ -210,6 +211,7 @@ async def update_user_partial(
 # current_user=Depends(get_current_active_user),
         session: AsyncSession = Depends(db_helper.scoped_session_dependency)
 ):
+
     return await update_user_db(
         session=session,
         user=user,
