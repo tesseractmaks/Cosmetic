@@ -1,6 +1,7 @@
-from fastapi import APIRouter, status, Depends
+from fastapi import APIRouter, status, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 # from passlib.context import CryptContext
+from cosmetic_app.core import logger
 
 from cosmetic_app.crud import (
     read_product_db,
@@ -26,6 +27,7 @@ from .depends_endps import product_by_id
 router = APIRouter(tags=["Product"])
 
 
+@logger.catch
 @router.get(
     "/",
     response_model=list[ProductResponseSchema]
@@ -33,9 +35,16 @@ router = APIRouter(tags=["Product"])
 async def read_products(
         session: AsyncSession = Depends(db_helper.scoped_session_dependency),
 ):
-    return await read_product_db(session=session)
+    products = await read_product_db(session=session)
+    if products is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            headers={"X-Error": "Url format wrong"},
+        )
+    return products
 
 
+@logger.catch
 @router.get(
     "/{product_id}/",
     response_model=ProductResponseSchema
@@ -44,12 +53,17 @@ async def read_product_by_id(
         # current_product=Depends(get_current_active_product),
         product: ProductSchema = Depends(product_by_id)
 ):
+    if product is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            headers={"X-Error": "Url format wrong"},
+        )
     return product
 
 
 # http://127.0.0.1:8000/api/v1/products/tag/lush/
 
-
+@logger.catch
 @router.get(
     "/tag/{tag_title}/",
     # response_model=TagResponseSchema
@@ -57,9 +71,13 @@ async def read_product_by_id(
 async def read_products_by_tag(
         tag_title: str,
         session: AsyncSession = Depends(db_helper.scoped_session_dependency),
-
 ):
     products = await read_tag_by_title_db(session=session, tag_title=tag_title)
+    if products is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            headers={"X-Error": "Url format wrong"},
+        )
 
     for product in products.products_assoc:
         print(product.title)
@@ -67,6 +85,7 @@ async def read_products_by_tag(
     return products.products_assoc
 
 
+@logger.catch
 @router.get(
     "/category/{category_title}/",
     # response_model=CategoryResponseSchema
@@ -77,12 +96,17 @@ async def read_products_by_tag(
 
 ):
     products = await read_category_by_title_db(session=session, category_title=category_title)
-
+    if products is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            headers={"X-Error": "Url format wrong"},
+        )
     # for product in products.products_assoc:
     #     print(product.title)
     return products.products_assoc
 
 
+@logger.catch
 @router.post(
     "/",
     response_model=ProductResponseSchema,
@@ -97,6 +121,7 @@ async def create_product(
     return await create_product_db(session=session, product_in=product_in)
 
 
+@logger.catch
 @router.put(
     "/{product_id}",
     response_model=ProductResponseSchema
@@ -107,6 +132,11 @@ async def update_product(
         # current_product = Depends(get_current_active_product),
         session: AsyncSession = Depends(db_helper.scoped_session_dependency)
 ):
+    if product_update is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            headers={"X-Error": "Empty data"},
+        )
     return await update_product_db(
         session=session,
         product=product,
@@ -114,6 +144,7 @@ async def update_product(
     )
 
 
+@logger.catch
 @router.patch(
     "/{product_id}",
     response_model=ProductResponseSchema
@@ -124,6 +155,11 @@ async def update_product_partial(
         # current_product=Depends(get_current_active_product),
         session: AsyncSession = Depends(db_helper.scoped_session_dependency)
 ):
+    if product_update is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            headers={"X-Error": "Empty data"},
+        )
     return await update_product_db(
         session=session,
         product=product,
@@ -132,10 +168,16 @@ async def update_product_partial(
     )
 
 
+@logger.catch
 @router.delete("/{product_id}/", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_product(
         product: ProductSchema = Depends(product_by_id),
         # current_product=Depends(get_current_active_product),
         session: AsyncSession = Depends(db_helper.scoped_session_dependency)
 ) -> None:
+    if product is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            headers={"X-Error": "Url format wrong"},
+        )
     await delete_product_db(product=product, session=session)

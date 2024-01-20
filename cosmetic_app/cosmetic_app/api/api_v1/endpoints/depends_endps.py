@@ -5,7 +5,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from cosmetic_app.crud import (
     read_user_by_id_db,
-    read_profile_by_id_db,
     read_tag_by_id_db,
     read_category_by_id_db,
     read_product_by_id_db
@@ -14,14 +13,13 @@ from cosmetic_app.db.db_helper import db_helper
 from cosmetic_app.schemas import (
     UserSchema,
     ProductSchema,
-    ProfileSchema,
     TagSchema,
     CategorySchema
 )
 
 
 async def user_by_id(
-        user_id: Annotated[uuid.uuid4, Path],
+        user_id: str,
         session: AsyncSession = Depends(db_helper.scoped_session_dependency)
 ) -> UserSchema:
     user = await read_user_by_id_db(session=session, user_id=user_id)
@@ -31,17 +29,6 @@ async def user_by_id(
         status_code=status.HTTP_404_NOT_FOUND, detail="not found..."
     )
 
-
-async def profile_by_id(
-        profile_id: Annotated[uuid.uuid4, Path],
-        session: AsyncSession = Depends(db_helper.scoped_session_dependency)
-) -> ProfileSchema:
-    profile = await read_profile_by_id_db(session=session, profile_id=profile_id)
-    if profile is not None:
-        return profile
-    raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND, detail="not found..."
-    )
 
 
 async def product_by_id(

@@ -1,4 +1,7 @@
+import sys
+
 from pydantic_settings import BaseSettings
+from loguru import logger
 
 
 class Settings(BaseSettings):
@@ -11,3 +14,26 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+logger.add(
+    # "runtime_ {time} .json",
+    sys.stdout,
+    # retention="10 days",
+    format="{time} {level} {message}",
+    # level="INFO",
+    level="ERROR",
+    serialize=True,
+    backtrace=True,
+    diagnose=True,
+)
+
+# logger.add(
+#     "runtime_ {time} .json",
+#     retention="10 days",
+#     format="{time} {level} {message}",
+#     # level="INFO",
+#     level="ERROR",
+#     serialize=True,
+#     backtrace=True,
+#     diagnose=True,
+# )

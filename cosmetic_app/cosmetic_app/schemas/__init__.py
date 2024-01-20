@@ -14,11 +14,6 @@ __all__ = (
     "ProductCreateSchema",
     "ProductUpdatePartialSchema",
     "ProductResponseSchema",
-    "ProfileSchema",
-    "ProfileCreateSchema",
-    "ProfileResponseSchema",
-    "ProfileUpdateSchema",
-    "ProfileUpdatePartialSchema",
     "UserSchema",
     "UserUpdateSchema",
     "UserCreateSchema",
@@ -53,13 +48,6 @@ from .product import (
     ProductResponseSchema
 )
 
-from .profile import (
-    ProfileSchema,
-    ProfileUpdateSchema,
-    ProfileCreateSchema,
-    ProfileUpdatePartialSchema,
-    ProfileResponseSchema
-)
 
 from .user import (
     UserSchema,

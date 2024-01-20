@@ -1,10 +1,11 @@
 import datetime
+import json
+import uuid
 
-
-from fastapi import APIRouter, status, Depends
+from fastapi import APIRouter, status, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 # from passlib.context import CryptContext
-
+from cosmetic_app.core import logger
 from cosmetic_app.crud.user import read_user_db, update_user_db, create_user_db, delete_user_db
 from cosmetic_app.db.db_helper import db_helper
 from cosmetic_app.schemas import (
@@ -18,11 +19,11 @@ from .depends_endps import user_by_id
 
 # from cosmetic_app.auth import get_current_active_user
 
-
 import redis
 
 from kafka import KafkaProducer, KafkaConsumer
 import pickle
+
 router = APIRouter(tags=["User"])
 
 
@@ -44,7 +45,6 @@ async def get_consumer():
         max_poll_records=1000,
         # consumer_timeout_ms=100,
 
-
     )
 
     for records in consumer:
@@ -55,7 +55,7 @@ async def get_consumer():
 
 
 async def send_producer(value_raw, topic_name='users'):
-    kafka_producer = KafkaProducer(bootstrap_servers=["127.0.0.1:9092"], api_version=(0,10))
+    kafka_producer = KafkaProducer(bootstrap_servers=["127.0.0.1:9092"], api_version=(0, 10))
     value = pickle.dumps(value_raw)
     try:
         # key_bytes = bytes(key, encoding="utf-8")
@@ -83,10 +83,10 @@ async def send_producer(value_raw, topic_name='users'):
 #         api_version=(0, 10),
 #         consumer_timeout_ms=1000
 #     )
-    # records = pickle.loads(consumer.value)
-    # print(records)
-    # for record in records:
-    #     print(record["users"])
+# records = pickle.loads(consumer.value)
+# print(records)
+# for record in records:
+#     print(record["users"])
 
 
 def parse_response(response_raw):
@@ -131,9 +131,10 @@ def parse_response(response_raw):
     # return e
     return json.dumps(e)
     # return pickle.dumps(e)
-        # print(type(z))
+    # print(type(z))
 
 
+@logger.catch
 @router.get(
     "/",
     # response_model=list[UserResponseSchema]
@@ -143,6 +144,11 @@ async def read_users(
         session: AsyncSession = Depends(db_helper.scoped_session_dependency),
 ):
     response = await read_user_db(session=session)
+    if response is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            headers={"X-Error": "Url format wrong"},
+        )
 
     # kafka
     # send_producer(value, topic_name='users')
@@ -159,32 +165,45 @@ async def read_users(
     return response
 
 
+@logger.catch
 @router.get(
     "/{user_id}/",
-    # response_model=UserResponseSchema
+    response_model=UserResponseSchema
 )
 async def read_user_by_id(
         # current_user=Depends(get_current_active_user),
         user: UserSchema = Depends(user_by_id)
 ):
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            headers={"X-Error": "Url format wrong"},
+        )
     return user
 
 
+@logger.catch
 @router.post(
     "/",
-response_model=UserResponseSchema,
-status_code=status.HTTP_201_CREATED
+    response_model=UserCreateSchema,
+
+    status_code=status.HTTP_201_CREATED
 )
 async def create_user(
         user_in: UserCreateSchema,
         session: AsyncSession = Depends(db_helper.scoped_session_dependency)
 ):
-    print(user_in)
+    if user_in is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            headers={"X-Error": "Empty data"},
+        )
     # pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
     # user_in.password = pwd_context.hash(user_in.password)
     return await create_user_db(session=session, user_in=user_in)
 
 
+@logger.catch
 @router.put(
     "/{user_id}",
     # response_model=UserResponseSchema
@@ -195,12 +214,19 @@ async def update_user(
         # current_user = Depends(get_current_active_user),
         session: AsyncSession = Depends(db_helper.scoped_session_dependency)
 ):
+    if user_update is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            headers={"X-Error": "Empty data"},
+        )
     return await update_user_db(
         session=session,
         user=user,
         user_update=user_update,
     )
 
+
+@logger.catch
 @router.patch(
     "/{user_id}",
     # response_model=UserResponseSchema
@@ -208,9 +234,14 @@ async def update_user(
 async def update_user_partial(
         user_update: UserUpdatePartialSchema,
         user: UserSchema = Depends(user_by_id),
-# current_user=Depends(get_current_active_user),
+        # current_user=Depends(get_current_active_user),
         session: AsyncSession = Depends(db_helper.scoped_session_dependency)
 ):
+    if user_update is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            headers={"X-Error": "Empty data"},
+        )
 
     return await update_user_db(
         session=session,
@@ -220,13 +251,16 @@ async def update_user_partial(
     )
 
 
+@logger.catch
 @router.delete("/{user_id}/", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user(
         user: UserSchema = Depends(user_by_id),
-# current_user=Depends(get_current_active_user),
+        # current_user=Depends(get_current_active_user),
         session: AsyncSession = Depends(db_helper.scoped_session_dependency)
 ) -> None:
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            headers={"X-Error": "Url format wrong"},
+        )
     await delete_user_db(user=user, session=session)
-
-
-

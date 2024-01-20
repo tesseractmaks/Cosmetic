@@ -3,7 +3,6 @@ import asyncio
 from hypercorn.asyncio import serve
 from hypercorn.config import Config
 
-
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
 
@@ -16,6 +15,16 @@ from cosmetic_app.api import router as router_v1
 # from api import router_token
 from cosmetic_app.core import settings
 from cosmetic_app.db import connect_create_if_exist, init_db
+from fastapi.exceptions import RequestValidationError, ResponseValidationError
+from fastapi.exception_handlers import request_validation_exception_handler
+import sentry_sdk
+from cosmetic_app.core import logger
+
+sentry_sdk.init(
+    dsn="https://0f50f66ec7cc31cb0cde4c1fe5679d94@o4505432482316288.ingest.sentry.io/4506539470618624",
+    traces_sample_rate=1.0,
+    profiles_sample_rate=1.0,
+)
 
 
 @asynccontextmanager
@@ -28,6 +37,20 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+
+
+@logger.catch
+@app.exception_handler(ResponseValidationError)
+async def validation_exception_handler(request, exc):
+    logger.error(exc)
+    return await request_validation_exception_handler(request, exc)
+
+
+@logger.catch
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request, exc):
+    logger.error(exc)
+    return await request_validation_exception_handler(request, exc)
 
 
 # app.mount("/img", StaticFiles(directory="frontend", html=True), name="img")
@@ -61,10 +84,3 @@ sockets = config.create_sockets()
 sock = sockets.insecure_sockets[0]
 
 asyncio.run(serve(app, config))
-
-
-
-
-
-
-

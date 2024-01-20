@@ -3,7 +3,6 @@ __all__ = (
     "Tag",
     "Category",
     "Product",
-    "Profile",
     "UserModel",
     "AssociateTagProduct",
     "AssociateCategoryProduct",
@@ -15,7 +14,7 @@ from .order import Order
 from .tags import Tag
 from .category import Category
 from .product import Product
-from .profile import Profile
+
 from .user import UserModel
 from .associate_tag_product import AssociateTagProduct
 from .associate_category_product import AssociateCategoryProduct

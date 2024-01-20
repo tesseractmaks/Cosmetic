@@ -19,11 +19,6 @@ __all__ = (
     "update_product_db",
     "create_product_db",
     "delete_product_db",
-    "read_profile_db",
-    "read_profile_by_id_db",
-    "update_profile_db",
-    "create_profile_db",
-    "delete_profile_db",
     "read_tag_by_title_db",
     "read_products_by_category_db",
     "read_category_by_title_db",
@@ -69,13 +64,6 @@ from .product import (
     read_products_by_category_db
 )
 
-from .profile import (
-    read_profile_db,
-    read_profile_by_id_db,
-    update_profile_db,
-    create_profile_db,
-    delete_profile_db
-)
 
 from .order import (
     read_order_db,

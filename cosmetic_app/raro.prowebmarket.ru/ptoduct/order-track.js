@@ -63,7 +63,6 @@ export async function orderTrack(idx = 1) {
     buttonTr.addEventListener("click", async function(e) {
         await wSocket(ws)
         e.preventDefault()
-       
     })
     ws.onmessage = async function(evt) {
         let recived_msg = await evt.data

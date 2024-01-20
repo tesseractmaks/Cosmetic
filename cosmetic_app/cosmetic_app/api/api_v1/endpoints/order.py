@@ -1,8 +1,16 @@
 import json
 from typing import Any
-
+from cosmetic_app.core import logger
 import jsonpickle
-from fastapi import APIRouter, status, Depends, Request, Response
+from fastapi import (
+    APIRouter,
+    status,
+    Depends,
+    Request,
+    Response,
+    HTTPException,
+    WebSocketException
+)
 from fastapi.websockets import WebSocket, WebSocketDisconnect
 from sqlalchemy.ext.asyncio import AsyncSession
 # from passlib.context import CryptContext
@@ -47,6 +55,7 @@ async def get_links(client: aiohttp.ClientSession, link):
         pass
 
 
+@logger.catch
 @router.get(
     "/",
     # response_model=list[ProductResponseSchema]
@@ -56,6 +65,11 @@ async def create_producers_order(
         request: Request,
         session: AsyncSession = Depends(db_helper.scoped_session_dependency),
 ):
+    if topics is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            headers={"X-Error": "Url format wrong"},
+        )
 
     for topic in topics.split(","):
         value = {
@@ -87,6 +101,7 @@ class ConnectionManager:
 manager = ConnectionManager()
 
 
+@logger.catch
 @router.websocket("/ws/{client_id}")
 async def websocket_endpoint(
         websocket: WebSocket,
@@ -97,6 +112,8 @@ async def websocket_endpoint(
     # record = get_consumer(topic)
 
     # sockets
+    if client_id is None:
+        raise WebSocketException(code=status.WS_1008_POLICY_VIOLATION)
     await manager.connect(websocket)
     try:
         while True:
@@ -109,6 +126,7 @@ async def websocket_endpoint(
         await manager.broadcast(f"Client #{client_id} left the chat")
 
 
+@logger.catch
 @router.get(
     "/topic/{topic}/",
     # response_model=list[ProductResponseSchema]
@@ -119,9 +137,15 @@ async def get_consumer_order(
         topic: str = None,
         session: AsyncSession = Depends(db_helper.scoped_session_dependency),
 ):
+    if topic is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            headers={"X-Error": "Url format wrong"},
+        )
     record = get_consumer(topic)
 
 
+@logger.catch
 @router.get(
     "/topic/event",
     # response_model=list[ProductResponseSchema]
@@ -131,11 +155,15 @@ async def get_consumer_order(
         topic: str = None,
         session: AsyncSession = Depends(db_helper.scoped_session_dependency),
 ):
+    if response is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            headers={"X-Error": "Url format wrong"},
+        )
     print("response")
 
     response.headers["Content-Type"] = "text/event-stream"
     return {"data": "response"}
-
 
     # order_article = await read_order_db(session=session)
     # print(topics.split(","))
@@ -179,7 +207,7 @@ async def get_consumer_order(
 
 # http://127.0.0.1:8000/api/v1/orders/tag/lush/
 
-
+@logger.catch
 @router.post(
     "/",
     response_model=OrderResponseSchema,
@@ -189,6 +217,11 @@ async def create_order(
         order_in: ProductCreateSchema,
         session: AsyncSession = Depends(db_helper.scoped_session_dependency)
 ):
+    if order_in is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            headers={"X-Error": "Empty data"},
+        )
     # pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
     # order_in.password = pwd_context.hash(order_in.password)
     return await create_order_db(session=session, order_in=order_in)

@@ -11,7 +11,6 @@ from sqlalchemy.ext.asyncio import AsyncResult
 
 from cosmetic_app.models.gist import values_data
 from cosmetic_app.models.user import UserModel
-from cosmetic_app.models.profile import Profile
 from cosmetic_app.models.category import Category
 from cosmetic_app.models.product import Product
 
@@ -47,23 +46,23 @@ async def add_test_user(session):
     await session.commit()
 
 
-async def add_test_profile(session):
-    query = select(UserModel.id)
-    users = await session.execute(query)
-
-    for i in users.scalars().all():
-        values_data = {
-            "nickname": fake.user_name(),
-            "phone": fake.phone_number(),
-            "photo": fake.image_url(),
-            "first_name": fake.first_name_female(),
-            "last_name": fake.last_name_female(),
-            "user_id": i,
-            "created_at": datetime.datetime.utcnow(),
-            "updated_at": datetime.datetime.utcnow()
-        }
-        await session.execute(insert(Profile).values(values_data))
-    await session.commit()
+# async def add_test_profile(session):
+#     query = select(UserModel.id)
+#     users = await session.execute(query)
+#
+#     for i in users.scalars().all():
+#         values_data = {
+#             "nickname": fake.user_name(),
+#             "phone": fake.phone_number(),
+#             "photo": fake.image_url(),
+#             "first_name": fake.first_name_female(),
+#             "last_name": fake.last_name_female(),
+#             "user_id": i,
+#             "created_at": datetime.datetime.utcnow(),
+#             "updated_at": datetime.datetime.utcnow()
+#         }
+#         await session.execute(insert(Profile).values(values_data))
+#     await session.commit()
 
 
 async def add_test_category(session):
@@ -193,12 +192,9 @@ async def add_test_order_products(session):
     # order.products_assoc.append(product)
 
 
-
-
 async def add_test_data():
     async with db_helper.session_factory() as session:
         await add_test_user(session)
-        await add_test_profile(session)
         await add_test_product(session)
         await add_test_category(session)
         await add_test_tag(session)

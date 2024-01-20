@@ -10,8 +10,6 @@ class UserModel(Base):
     password: Mapped[str] = mapped_column(unique=True)
     is_active: Mapped[bool]
 
-    profile = relationship("Profile", uselist=False, back_populates="user", lazy='joined')
-
     created_at: Mapped[datetime] = mapped_column(server_default=text("TIMEZONE('utc', now())"))
     updated_at: Mapped[datetime] = mapped_column(server_default=text("TIMEZONE('utc', now())"), onupdate=datetime.utcnow)
 

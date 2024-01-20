@@ -5,9 +5,6 @@ from uuid import UUID, uuid4
 
 from typing import TYPE_CHECKING
 
-# if TYPE_CHECKING:
-from cosmetic_app.schemas.profile import ProfileSchema
-
 
 class UserSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
@@ -20,7 +17,6 @@ class UserSchema(BaseModel):
 
 class UserResponseSchema(UserSchema):
     id: UUID = Field(default_factory=uuid4)
-    profile: ProfileSchema
 
 
 class UserCreateSchema(UserSchema):
@@ -32,4 +28,9 @@ class UserUpdateSchema(UserSchema):
 
 
 class UserUpdatePartialSchema(UserSchema):
-    ...
+    id: UUID | None = None
+    email: str | None = None
+    password: str | None = None
+    is_active: bool | None = None
+    created_at: datetime | None = None
+    updated_at: datetime | None = None
