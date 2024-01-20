@@ -56,7 +56,7 @@ async def category_by_id(
 
 
 async def tag_by_id(
-        tag_id: Annotated[uuid.uuid4, Path],
+        tag_id: str,
         session: AsyncSession = Depends(db_helper.scoped_session_dependency)
 ) -> TagSchema:
     tag = await read_tag_by_id_db(session=session, tag_id=tag_id)

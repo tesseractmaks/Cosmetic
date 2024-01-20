@@ -22,7 +22,8 @@ class TagSchema(BaseModel):
 
 class TagResponseSchema(TagSchema):
     model_config = ConfigDict(from_attributes=True)
-    products_assoc: list[ProductSchema]
+    # products_assoc: list[ProductSchema]
+    ...
 
 
 class TagCreateSchema(TagSchema):

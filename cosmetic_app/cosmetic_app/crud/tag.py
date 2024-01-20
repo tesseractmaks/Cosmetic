@@ -15,7 +15,6 @@ from cosmetic_app.schemas import (
 async def read_tag_db(session: AsyncSession) -> list[TagSchema]:
     query = select(Tag).order_by(Tag.id).options(
         selectinload(Tag.products_assoc))
-
     result: AsyncResult = await session.execute(query)
     tags = result.unique().scalars().all()
     return list(tags)
