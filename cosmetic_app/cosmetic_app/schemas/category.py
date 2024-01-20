@@ -25,13 +25,16 @@ class CategoryResponseSchema(CategorySchema):
     products_assoc: list[ProductSchema]
 
 
-class CategoryCreateSchema(CategorySchema):
+class CategoryCreateSchema(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    title: str
+
+
+class CategoryUpdateSchema(BaseModel):
     ...
 
 
-class CategoryUpdateSchema(CategorySchema):
-    ...
+class CategoryUpdatePartialSchema(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    title: str | None = None
 
-
-class CategoryUpdatePartialSchema(CategorySchema):
-    ...

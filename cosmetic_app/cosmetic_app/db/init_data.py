@@ -38,7 +38,7 @@ async def add_test_user(session):
         # await session.commit()
 
         values_data = {
-            "email": fake.email(),
+            "email": "one@mail.ru1",
             "password": fake.nic_handle(),
             "is_active": True,
         }

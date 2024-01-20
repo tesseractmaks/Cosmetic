@@ -109,7 +109,7 @@ async def read_products_by_tag(
 @logger.catch
 @router.post(
     "/",
-    response_model=ProductResponseSchema,
+    response_model=ProductUpdatePartialSchema,
     status_code=status.HTTP_201_CREATED
 )
 async def create_product(
@@ -147,7 +147,7 @@ async def update_product(
 @logger.catch
 @router.patch(
     "/{product_id}",
-    response_model=ProductResponseSchema
+    response_model=ProductUpdatePartialSchema
 )
 async def update_product_partial(
         product_update: ProductUpdatePartialSchema,

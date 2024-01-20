@@ -40,4 +40,13 @@ class ProductUpdateSchema(ProductSchema):
 
 
 class ProductUpdatePartialSchema(ProductSchema):
-    ...
+    model_config = ConfigDict(from_attributes=True)
+    title: str | None = None
+    link_detail: str | None = None
+    price: int | None = None
+    image: str | None = None
+    label: str | None = None
+    num_goods: str | None = None
+    data_goods: str | None = None
+    created_at: datetime | None = None
+    updated_at: datetime | None = None

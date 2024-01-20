@@ -41,7 +41,7 @@ async def create_order_db(
         session: AsyncSession,
         order_in: OrderCreateSchema,
 ) -> Order:
-    order_obj =order_in.model_dump()
+    order_obj = order_in.model_dump()
     order = Order(**order_obj)
     session.add(order)
     await session.commit()

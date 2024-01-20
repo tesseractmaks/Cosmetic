@@ -61,7 +61,7 @@ async def read_category_by_id(
 @logger.catch
 @router.post(
     "/",
-    response_model=CategoryResponseSchema,
+    response_model=CategoryCreateSchema,
     status_code=status.HTTP_201_CREATED
 )
 async def create_category(
@@ -104,7 +104,7 @@ async def update_category(
 @logger.catch
 @router.patch(
     "/{category_id}",
-    response_model=CategoryResponseSchema
+    response_model=CategoryUpdatePartialSchema
 )
 async def update_category_partial(
         category_update: CategoryUpdatePartialSchema,

@@ -30,9 +30,8 @@ async def user_by_id(
     )
 
 
-
 async def product_by_id(
-        product_id: Annotated[uuid.uuid4, Path],
+        product_id: str,
         session: AsyncSession = Depends(db_helper.scoped_session_dependency)
 ) -> ProductSchema:
     product = await read_product_by_id_db(session=session, product_id=product_id)
@@ -44,7 +43,7 @@ async def product_by_id(
 
 
 async def category_by_id(
-        category_id: Annotated[uuid.uuid4, Path],
+        category_id: str,
         session: AsyncSession = Depends(db_helper.scoped_session_dependency)
 ) -> CategorySchema:
     category = await read_category_by_id_db(session=session, category_id=category_id)

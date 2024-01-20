@@ -50,7 +50,7 @@ def anyio_backend():
     return 'asyncio'
 
 
-@pytest_asyncio.fixture
+@pytest_asyncio.fixture()
 async def create_user(
         client: AsyncClient
 ):
